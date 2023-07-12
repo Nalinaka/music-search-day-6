@@ -5,15 +5,22 @@ import { DataContext } from './context/DataContext'
 import { SearchContext } from './context/SearchContext'
 import { BrowserRouter as Router, Routes, Route, Redirect } from 'react-router-dom'
 import HomePage from './components/HomePage.js'
+import ArtistView from './components/ArtistView'
+import AlbumView from './components/AlbumView'
+import NavBar from './components/NavBar'
+import { createResource as fetchData } from './Helper'
+// import { useEffect, useState, Suspense } from 'react'
+
+
 
 const App = () => {
   let [search, setSearch] = useState('')
   let [message, setMessage] = useState('Search for Music!')
-  let [data, setData] = useState([])
+  let [data, setData] = useState(null)
   let searchInput = useRef('');
 
-  const API_URL = 'https://itunes.apple.com/search?term='
 
+  const API_URL = 'https://itunes.apple.com/search?term='
 
 
   const handleSearch = (e, term) => {
@@ -31,8 +38,32 @@ const App = () => {
     fetchData()
 }
 
+useEffect(() => {
+  if (searchTerm) {
+      setData(fetchData(searchTerm))
+  }
+}, [searchTerm])
+
+const renderGallery = () => {
+  if(data){
+      return (
+      <Suspense> fallback={<h1>Loading...</h1>} 
+      <Gallery data={data} />
+      </Suspense>
+      )
+  }
+}
+return (
+  <div className="App">
+      <SearchBar handleSearch={handleSearch} />
+      {message}
+      {renderGallery()}
+  </div>
+  )
+
 console.log('DATA FROM API!!! app.js', data)
   return (
+
       <div className='App'>
         <SearchContext.Provider value={{term: searchInput, handleSearch: handleSearch}}>
           <DataContext.Provider value={data}>
@@ -40,6 +71,8 @@ console.log('DATA FROM API!!! app.js', data)
             <Router>
               <Routes>
                 <Route path="/" element={<HomePage />} />
+                <Route path="/artist/:id" element={<ArtistView />} />
+                <Route path="/album/:id" element={<AlbumView />} />
               </Routes>
             </Router>
             

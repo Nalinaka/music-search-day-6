@@ -17,15 +17,6 @@ const Gallery = (props) => {
         </div>
     )
 }
- (
-        <div className="App">
-            <SearchBar handleSearch={handleSearch} />
-            {message}
-            <Suspense fallback={<h1>Loading...</h1>}>
-                // <Gallery data={data} />
-            </Suspense>
-        </div>
-    )
 
     export default Gallery
 
